@@ -77,7 +77,7 @@ else{
                   $email  = mysql_result($result,$i,"email");
                   $time   = mysql_result($result,$i,"timestamp");
 
-                  echo "<tr><td>".$uname."</td><td>".$ulevel."</td><td>".$email."</td><td>".$time."</td></tr>";
+                  echo "<tr><td>".$uname."</td><td>".$ulevel."</td><td>".$email."</td><td>".date('Y-m-d H:i:s', $time)."</td></tr>";
                }
                echo "</table>";
             }
