@@ -31,7 +31,7 @@ class MapSessions extends Analytics
     * @return string Number of users
     */
     public function mapTotal($limit = null) {
-        if (is_null($mTotal)) {
+        if (is_null($this->mTotal)) {
             $this->_mapAvgs();
         }
         return json_encode($this->mTotal);
@@ -61,7 +61,6 @@ class MapSessions extends Analytics
             WHERE connect_date BETWEEN '$to' AND '$from'
             GROUP BY map
             ORDER BY players DESC";
-            $total = ConvertMin($total);
             $this->mTotal = $this->db->query($q,true);
         }
     }

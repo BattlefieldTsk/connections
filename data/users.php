@@ -75,7 +75,7 @@ class UserSessions extends Analytics
     *  Gets the total Premium/F2P user count
     */
     public function jsPremiumTotal() {
-        if (is_null($pTotal)) {
+        if (is_null($this->pTotal)) {
             $this->_premiumTotal();
         }
         $total = 0;
@@ -127,7 +127,7 @@ class UserSessions extends Analytics
     *  Gets the total Connect Method user count
     */
     public function jsMethodTotal() {
-        if (is_null($cmTotal)) {
+        if (is_null($this->cmTotal)) {
             $this->_MethodTotal();
         }
         $total = 0;

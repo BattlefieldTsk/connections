@@ -360,7 +360,7 @@ class PlayerSessions extends Analytics
     * @return string Number of sessions by date in a json object
     */
     public function jsDailyTotal() {
-        if (is_null($dTotal)) {
+        if (is_null($this->dTotal)) {
             $this->_dailyTotal();
         }
         return json_encode($this->dTotal);

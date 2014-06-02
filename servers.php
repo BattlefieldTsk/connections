@@ -249,7 +249,7 @@ mysqli_close($con);
           </div>
         </div><!-- /.row -->
         <div class="row">
-          <div class="col-lg-12 chart">
+          <div class="col-lg-12">
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> Server Statistics (30 day)</h3>

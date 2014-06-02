@@ -6,7 +6,7 @@ require_once('config.php');
 if (!isset($_POST["save"]) || $_POST["save"] != "addserver") {
     header("Location: ../servers.php"); exit;
 }
-  
+
 // connect and insert server data into database
 $con=mysqli_connect(PA_DATABASE_SERVER, PA_DATABASE_USER, PA_DATABASE_PASSWORD, PA_DATABASE_NAME);
 // get the posted data

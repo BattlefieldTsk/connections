@@ -10,13 +10,13 @@ if (mysqli_connect_errno())
 $S_total = mysqli_query($con,"SELECT COUNT(DISTINCT server_ip) AS total FROM player_analytics
       WHERE connect_date BETWEEN DATE_FORMAT(NOW() - INTERVAL 30 DAY, '%Y-%m-%d') AND DATE_FORMAT(NOW(), '%Y-%m-%d')");
         $S_total = mysqli_fetch_array($S_total);
-$S_ = mysqli_query($con,"SELECT server_ip, COUNT(server_ip) AS total_conn, COUNT(DISTINCT server_ip) 
+$S_ = mysqli_query($con,"SELECT server_ip, COUNT(DISTINCT auth) 
     AS total, servers.ip, servers.server_name AS servername 
     FROM player_analytics
     LEFT JOIN servers
     ON player_analytics.server_ip=servers.ip
     WHERE connect_date BETWEEN DATE_FORMAT(NOW() - INTERVAL 30 DAY, '%Y-%m-%d') AND DATE_FORMAT(NOW(), '%Y-%m-%d')
-    GROUP BY server_ip ORDER BY total_conn DESC LIMIT 0,5");
+    GROUP BY server_ip ORDER BY total DESC LIMIT 0,5");
 
 if (isset($_GET['server'])) {
   $sql = mysqli_query($con,"SELECT server_name FROM servers WHERE ip='$IP'");
@@ -70,7 +70,6 @@ mysqli_close($con);
                   while($row = mysqli_fetch_array($S_))
                     {
                       $Server = $row['server_ip'];
-                      $total_conn = $row['total_conn'];
                       $total = $row['total'];
                       $ServerName = $row['servername'];
               ?>
@@ -83,7 +82,7 @@ mysqli_close($con);
                       echo            "</p>";
                       echo            "<div>";
                       echo                "<span class='server-muted'>$Server</span>";
-                      echo                "<span class='pull-right server-muted'><i class='fa fa-link'></i> $total_conn</span>";
+                      echo                "<span class='pull-right server-muted'><i class='fa fa-link'></i> $total</span>";
                       echo            "</div>";
                       echo        "</div>";
                       echo    "</a>";

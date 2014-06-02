@@ -75,9 +75,6 @@ $mindate = mysqli_query($con,"SELECT connect_time FROM player_analytics ORDER BY
   $row = mysqli_fetch_array($mindate);
     $epoch = $row['connect_time'];
     $min = date("m/d/Y", $epoch);
-$recent = mysqli_query($con,"SELECT connect_time FROM player_analytics ORDER BY connect_time DESC LIMIT 0,10");
-  $row = mysqli_fetch_array($recent);
-    $timestamp = $row['connect_time'];
 
 mysqli_close($con);
 ?>
@@ -100,7 +97,7 @@ mysqli_close($con);
     <link rel="stylesheet" href="css/morris-0.4.3.min.css">
   </head>
   <body>
-<?php require("include/nav.php") ?>
+  <?php require("include/nav.php") ?>
       <div class="main">
           <h1 class="page-header">Dashboard <small>Overview</small></h1>
       <ol class="breadcrumb">

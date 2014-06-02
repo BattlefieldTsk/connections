@@ -31,7 +31,7 @@ class ServerSessions extends Analytics
     * @return string Number of users
     */
     public function monthlyTotal($limit = null) {
-        if (is_null($mTotal)) {
+        if (is_null($this->mTotal)) {
             $this->_monthlyAvgs();
         }
         return json_encode($this->mTotal);
