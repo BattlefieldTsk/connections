@@ -206,7 +206,7 @@ mysqli_close($con);
                   <i class="fa fa-globe fa-5x"></i>
                 </div>
                   <div class="col-sm-9 col-xs-10 text-right">
-                  <p class="announcement-heading"><?php $countryData = $sessions->monthlyCountryAvg(); echo $countryData[0]['country_code3'] ?></p>
+                  <p class="announcement-heading"><?php $countryData = $sessions->monthlyCountryAvg(); echo $countryData[0]['country_code3']; ?></p>
                       <p class="announcement-text">Most Active Region</p>
                   </div>
                 </div>
@@ -365,28 +365,32 @@ Morris.Area({
   fillOpacity: 0.5,
   hidehover: true,
 });
-
+    </script>
+    <script type="text/javascript">
 Morris.Donut({
   element: 'morris-chart-donut',
   labelColor: '#ecf0f1',
   data: <?php echo $sessions->jsonMonthlyCountryAvgPct(10); ?>,
   formatter: function (y) { return y + "%" ;}
 });
-
+    </script>
+    <script type="text/javascript">
 Morris.Donut({
   element: 'f2p',
   labelColor: '#ecf0f1',
-  data: <?php echo $user->jsPremiumTotal(); ?>,
+  data: <?php echo $user->jsPremiumTotal(); ?>
   formatter: function (y) { return y + "%" ;}
 });
-
+    </script>
+    <script type="text/javascript">
 Morris.Donut({
   element: 'method',
   labelColor: '#ecf0f1',
   data: <?php echo $user->jsMethodTotal(); ?>,
   formatter: function (y) { return y + "%" ;}
 });
-
+    </script>
+    <script type="text/javascript">
 Morris.Line({
   // ID of the element in which to draw the chart.
   element: 'morris-chart-line',
