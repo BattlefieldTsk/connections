@@ -378,7 +378,7 @@ Morris.Donut({
 Morris.Donut({
   element: 'f2p',
   labelColor: '#ecf0f1',
-  data: <?php echo $user->jsPremiumTotal(); ?>
+  data: <?php echo $user->jsPremiumTotal(); ?>,
   formatter: function (y) { return y + "%" ;}
 });
     </script>
