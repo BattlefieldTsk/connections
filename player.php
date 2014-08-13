@@ -140,6 +140,11 @@ $alt_accounts = mysqli_query($con,"SELECT name, auth, connect_time,
   (SELECT *  FROM player_analytics WHERE ip='$IP' AND auth!='$SteamID' ORDER BY connect_time DESC)
   AS player_analytics");
 
+// whether or not the player has alt accounts - we cant do row_count because COUNT and SUM in the
+// query make it always return at least one row, so instead we check if the row is valid.
+$hasAltAccounts = mysqli_fetch_assoc($alt_accounts)['auth'];
+mysqli_data_seek($alt_accounts, 0);
+
 mysqli_close($con);
 ?>
 
@@ -202,13 +207,7 @@ mysqli_close($con);
                 </div>
               </div>
             </div>
-            <?php if(mysqli_fetch_array($alt_accounts)[0]['auth'])
-            {
-                // if the first result is empty, there are no alt accounts so dont make the table.
-                // we then need to seek back to the 0th array position because num_rows doesn't
-                // work in this situation; because our query always returns at least 1 row.
-                mysqli_data_seek($alt_accounts, 0);
-            ?>
+            <?php if($hasAltAccounts) { ?>
             <div class="col-lg-9">
               <div class="panel panel-primary">
                 <div class="panel-heading">
