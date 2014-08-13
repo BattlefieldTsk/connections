@@ -142,7 +142,7 @@ $alt_accounts = mysqli_query($con,"SELECT name, auth, connect_time,
 
 // whether or not the player has alt accounts - we cant do row_count because COUNT and SUM in the
 // query make it always return at least one row, so instead we check if the row is valid.
-$hasAltAccounts = mysqli_fetch_assoc($alt_accounts)['auth'];
+$hasAltAccounts = strlen(mysqli_fetch_assoc($alt_accounts)['auth']) > 0;
 mysqli_data_seek($alt_accounts, 0);
 
 mysqli_close($con);
