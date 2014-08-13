@@ -244,8 +244,8 @@ mysqli_close($con);
                   </table>
                 </div>
             </div>
-          </div><!-- /.column -->
           <?php }; ?>
+          </div><!-- /.column -->
           <div class="col-lg-9">
             <div class="panel panel-primary">
               <div class="panel-heading">
