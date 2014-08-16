@@ -20,7 +20,7 @@ else{
 
 <?php
 
-class PersonaState 
+class PersonaState
   {
     const Offline = 0;
     const Online = 1;
@@ -31,7 +31,7 @@ class PersonaState
     const Looking = 6;
   }
 
-function PlayerStatus($state) 
+function PlayerStatus($state)
   {
     if ($state == PersonaState::Online || $state == PersonaState::Trading || $state == PersonaState::Looking)
       return "profile online";
@@ -44,21 +44,18 @@ function PlayerStatus($state)
       return "profile away";
   }
 
-function SteamTo64($id) 
-  { 
-    $parts = explode(':', str_replace('STEAM_', '' ,$id)); 
-    return bcadd(bcadd('76561197960265728', $parts['1']), bcmul($parts['2'], '2')); 
+function SteamTo64($id)
+  {
+    $parts = explode(':', str_replace('STEAM_', '' ,$id));
+    return bcadd(bcadd('76561197960265728', $parts['1']), bcmul($parts['2'], '2'));
   }
 
 function GetPlayerInformation($steam64)
   {
     $url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=".STEAM_APIKEY."&steamids=".$steam64.'&format=json';
-
-    $data = file_get_contents($url);
-    $information = json_decode($data, true);
-
+    $information = json_decode(file_get_contents($url), true);
     return $information['response']['players'][0];
-  } 
+  }
 
 $steam64 = SteamTo64($_GET['id']);
 $data = GetPlayerInformation(SteamTo64($_GET['id']));
@@ -93,7 +90,7 @@ if (isset($_GET['page']) && is_numeric($_GET['page'])) {
    $currentpage = 1;
 } // end if
 
-// the offset of the list, based on current page 
+// the offset of the list, based on current page
 $offset = ($currentpage - 1) * $rowsperpage;
 
 $prevpage = $currentpage - 1;
@@ -103,11 +100,11 @@ $connections = mysqli_query($con,"SELECT player_analytics.*, player_analytics.ip
   FROM player_analytics
   LEFT JOIN servers
   ON player_analytics.server_ip=servers.ip
-  WHERE auth='$id' 
-  AND `connect_date` BETWEEN DATE_FORMAT(NOW() - INTERVAL 30 DAY, '%Y-%m-%d') AND DATE_FORMAT(NOW(), '%Y-%m-%d') 
+  WHERE auth='$id'
+  AND `connect_date` BETWEEN DATE_FORMAT(NOW() - INTERVAL 30 DAY, '%Y-%m-%d') AND DATE_FORMAT(NOW(), '%Y-%m-%d')
   ORDER BY connect_time DESC LIMIT $offset, $rowsperpage");
 
-$profile = mysqli_query($con,"SELECT *, SUM(duration) AS total FROM player_analytics WHERE auth='$id' 
+$profile = mysqli_query($con,"SELECT *, SUM(duration) AS total FROM player_analytics WHERE auth='$id'
   ORDER BY connect_time DESC LIMIT 0, 1");
   while($row = mysqli_fetch_array($profile))
     {
@@ -137,6 +134,16 @@ $profile = mysqli_query($con,"SELECT *, SUM(duration) AS total FROM player_analy
       $Friends="serverbrowser_friends";
       $Playtime=$row['total'];
     };
+
+$alt_accounts = mysqli_query($con,"SELECT name, auth, connect_time,
+  COUNT(auth) AS visits, SUM(duration) AS duration FROM
+  (SELECT *  FROM player_analytics WHERE ip='$IP' AND auth!='$SteamID' ORDER BY connect_time DESC)
+  AS player_analytics");
+
+// whether or not the player has alt accounts - we cant do row_count because COUNT and SUM in the
+// query make it always return at least one row, so instead we check if the row is valid.
+$hasAltAccounts = strlen(mysqli_fetch_assoc($alt_accounts)['auth']) > 0;
+mysqli_data_seek($alt_accounts, 0);
 
 mysqli_close($con);
 ?>
@@ -176,29 +183,69 @@ mysqli_close($con);
         </div><!-- /.row -->
 
         <div class="row">
-          <div class="col-lg-3">
-            <div class="panel panel-primary">
-              <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-user"></i> Player</h3>
-              </div>
-              <div class="profile-info">
-                <img class="<?php echo(PlayerStatus($data['personastate'])); ?>" src="<?php echo($data['avatarfull']); ?>">
-                <h3><a href="<?php echo $data['profileurl'];?>"><?php echo "$Player"; ?></a></h3>
-                <h5><?php echo(ConnLocation($City,$Region,$CCode3,$Country)); ?></h5>
-              </div>
-              <div>
-                <table class="table profile">
-                  <tr><td class="left">ID</td><td class="right"><?php echo "$SteamID"; ?></td></tr>
-                  <tr><td class="left">IP</td><td class="right"><?php echo "$IP"; ?></td></tr>
-                  <tr><td class="left">Flags</td><td class="right"><?php echo(ConnFlags($Flags)); ?></td></tr>
-                  <tr><td class="left">Premium</td><td class="right"><?php echo(ConnPremium($Premium)); ?></td></tr>
-                  <tr><td class="left">MOTD</td><td class="right"><?php echo(ConnMOTD($MOTD)); ?></td></tr>
-                  <tr><td class="left">OS</td><td class="right"><?php echo(ConnOS($OS)); ?></td></tr>
-                  <tr><td class="left">Playtime</td><td class="right"><?php echo(ConvertMin($Playtime));?></td></tr>
-                </table>
+          <div class="column">
+            <div class="col-lg-3">
+              <div class="panel panel-primary">
+                <div class="panel-heading">
+                  <h3 class="panel-title"><i class="fa fa-user"></i> Player</h3>
+                </div>
+                <div class="profile-info">
+                  <img class="<?php echo(PlayerStatus($data['personastate'])); ?>" src="<?php echo($data['avatarfull']); ?>">
+                  <h3><a href="<?php echo $data['profileurl'];?>"><?php echo "$Player"; ?></a></h3>
+                  <h5><?php echo(ConnLocation($City,$Region,$CCode3,$Country)); ?></h5>
+                </div>
+                <div>
+                  <table class="table profile">
+                    <tr><td class="left">ID</td><td class="right"><?php echo "$SteamID"; ?></td></tr>
+                    <tr><td class="left">IP</td><td class="right"><?php echo "$IP"; ?></td></tr>
+                    <tr><td class="left">Flags</td><td class="right"><?php echo(ConnFlags($Flags)); ?></td></tr>
+                    <tr><td class="left">Premium</td><td class="right"><?php echo(ConnPremium($Premium)); ?></td></tr>
+                    <tr><td class="left">MOTD</td><td class="right"><?php echo(ConnMOTD($MOTD)); ?></td></tr>
+                    <tr><td class="left">OS</td><td class="right"><?php echo(ConnOS($OS)); ?></td></tr>
+                    <tr><td class="left">Playtime</td><td class="right"><?php echo(ConvertMin($Playtime));?></td></tr>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
+            <?php if($hasAltAccounts) { ?>
+            <div class="col-lg-9">
+              <div class="panel panel-primary">
+                <div class="panel-heading">
+                  <h3 class="panel-title"><i class="fa fa-user"></i> Other Accounts at this IP</h3>
+                </div>
+                <div class="table-responsive">
+                  <table id="alt_accounts" class="table table-striped table-bordered table-condensed table-tablesorter">
+                    <thead>
+                      <tr>
+                        <th style="text-align:left" class="default">Name</th>
+                        <th style="text-align:left" class="default">Playtime</th>
+                        <th style="text-align:left" class="default">Visits</th>
+                        <th style="text-align:right" class="default">Last Seen</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php
+                      while($row = mysqli_fetch_array($alt_accounts))
+                      {
+                          $Player   = $row['name'];
+                          $SteamID  = $row['auth'];
+                          $Time     = $row['connect_time'];
+                          $Visits   = $row['visits'];
+                          $Duration = $row['duration'];
+                      ?>
+                      <tr>
+                          <td style="text-align:left"><a href="<?php echo "player.php?id=$SteamID";?>"><?php echo "$Player"; ?></a></td>
+                          <td style="text-align:left"><?php echo ConvertMin($Duration) ?></td>
+                          <td style="text-align:left"><?php echo $Visits ?></td>
+                          <td style="text-align:right"><?php echo date('m/d/y g:i a', $Time);?></td>
+                      </tr>
+                   <?php }; ?>
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+          <?php }; ?>
+          </div><!-- /.column -->
           <div class="col-lg-9">
             <div class="panel panel-primary">
               <div class="panel-heading">
@@ -293,7 +340,7 @@ mysqli_close($con);
     <!-- Page Specific Plugins -->
     <script src="js/tablesorter/jquery.tablesorter.min.js"></script>
     <script type="text/javascript">
-      $(function() { 
+      $(function() {
         $('.tip').tooltip();
     });
         $(document).ready(function() {
